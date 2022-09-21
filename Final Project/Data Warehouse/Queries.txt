@@ -1,0 +1,39 @@
+﻿SELECT dimcountry.country, category, sum(amount) as totalsales
+FROM factsales 
+LEFT JOIN dimcategory ON factsales.categoryid = dimcategory.categoryid
+LEFT JOIN dimcountry ON factsales.countryid = dimcountry.countryid 
+group by grouping sets(dimcountry.country, dimcategory.category); 
+
+
+
+
+
+
+select year,country, sum(amount) as totalsales
+from FACTSALES
+left join DIMDATE
+on factsales.dateid = dimdate.dateid
+left join dimcountry
+on dimcountry.countryid=factsales.countryid
+group by rollup(year,country)
+order by year, country; 
+
+
+
+
+select year,country, avg(amount) as averagebilledamount
+from factsales
+left join dimdate
+on factsales.dateid = dimdate.dateid
+left join dimcountry
+on factsales.countryid=dimcountry.countryid
+group by cube(year,country)
+order by year, country;
+
+
+CREATE MATERIALIZED VIEW total_sales_per_country(country, totalbilledamount) AS
+(select country,  sum(amount)
+from factsales
+left join dimcountry
+on factsales.countryid = dimcountry.countryid
+group by country);
